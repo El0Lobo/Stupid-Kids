@@ -137,3 +137,7 @@ function getCountryName(countryIsoCode) {
 
 
   holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'public', countryIsoCode, holiday.subdivision));
+
+
+
+  
