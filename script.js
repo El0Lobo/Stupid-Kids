@@ -76,6 +76,45 @@ function markHolidayOnCalendar(holiday, type, countryIsoCode) {
       eventColor = 'green'; // Default color, if needed
   }
 
+  // Get the country name based on the ISO code
+  let countryName = getCountryName(countryIsoCode);
+
+  // Add the event to the calendar
+  const event = calendar.addEvent({
+    title: `${holiday.name[0].text} (${countryName})`, // Adding country name to the event title
+    start: startDate,
+    end: endDate,
+    color: eventColor, // Use the determined color for the event
+    allDay: true,
+    extendedProps: {
+      countryIsoCode: countryIsoCode
+    }
+  });
+
+  // Store the added event
+  if (!addedHolidays[countryIsoCode]) {
+    addedHolidays[countryIsoCode] = [];
+  }
+  addedHolidays[countryIsoCode].push(event);
+}
+
+// Function to get the country name based on ISO code
+function getCountryName(countryIsoCode) {
+  switch (countryIsoCode) {
+    case 'DE':
+      return 'Deutschland';
+    case 'AT':
+      return 'Östereich';
+    case 'CH':
+      return 'Schweiz';
+    case 'FR':
+      return 'Frankreich';
+    default:
+      return ''; // Return empty string if the ISO code is not recognized
+  }
+}
+
+
   // Add the event to the calendar
   const event = calendar.addEvent({
     title: holiday.name[0].text, // Assuming holiday.name is an array with at least one element
@@ -93,4 +132,3 @@ function markHolidayOnCalendar(holiday, type, countryIsoCode) {
     addedHolidays[countryIsoCode] = [];
   }
   addedHolidays[countryIsoCode].push(event);
-}
