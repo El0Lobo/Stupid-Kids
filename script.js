@@ -1,57 +1,53 @@
 // Define calendar globally
 var calendar;
 
-// Define an array to store added holidays
+// Define an object to store added holidays
 var addedHolidays = {};
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialization code for FullCalendar
+  initializeCalendar();
+  setupCheckboxListeners();
+});
+
+function initializeCalendar() {
   var calendarEl = document.getElementById("calendar");
   calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: "dayGridMonth",
     // Additional FullCalendar options as needed...
   });
   calendar.render();
+}
 
-  // Event listener for checkbox change
+function setupCheckboxListeners() {
   document.querySelectorAll('.countrySelection input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', function () {
       const countryIsoCode = this.id;
       const isChecked = this.checked;
       if (isChecked) {
-        fetchHolidays(countryIsoCode, '2024-01-01', '2025-12-31', countryIsoCode);
+        fetchHolidays(countryIsoCode, '2024-01-01', '2025-12-31');
       } else {
         removeHolidays(countryIsoCode);
       }
     });
   });
-});
-
-// Function to fetch holidays for a given country and optional subdivision
-function fetchHolidays(countryIsoCode, validFrom, validTo, subdivisionCode = '') {
-  const urlPublicHolidays = `https://openholidaysapi.org/PublicHolidays?countryIsoCode=${countryIsoCode}&validFrom=${validFrom}&validTo=${validTo}${subdivisionCode ? '&subdivisionCode=' + subdivisionCode : ''}`;
-  const urlSchoolHolidays = `https://openholidaysapi.org/SchoolHolidays?countryIsoCode=${countryIsoCode}&validFrom=${validFrom}&validTo=${validTo}${subdivisionCode ? '&subdivisionCode=' + subdivisionCode : ''}`;
-
-  // Fetch Public Holidays
-  fetch(urlPublicHolidays)
-    .then(response => response.json())
-    .then(holidays => {
-      // Mark Public Holidays on Calendar
-      holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'public', countryIsoCode));
-    })
-    .catch(error => console.error('Error fetching public holidays:', error));
-
-  // Fetch School Holidays
-  fetch(urlSchoolHolidays)
-    .then(response => response.json())
-    .then(holidays => {
-      // Mark School Holidays on Calendar
-      holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'school', countryIsoCode));
-    })
-    .catch(error => console.error('Error fetching school holidays:', error));
 }
 
-// Function to remove holidays for a given country
+function fetchHolidays(countryIsoCode, validFrom, validTo) {
+  const urlSchoolHolidays = `https://openholidaysapi.org/SchoolHolidays?countryIsoCode=${countryIsoCode}&validFrom=${validFrom}&validTo=${validTo}`;
+
+  fetch(urlSchoolHolidays)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch holidays');
+      }
+      return response.json();
+    })
+    .then(holidays => {
+      holidays.forEach(holiday => markHolidayOnCalendar(holiday, countryIsoCode));
+    })
+    .catch(error => console.error('Error fetching holidays:', error));
+}
+
 function removeHolidays(countryIsoCode) {
   if (addedHolidays[countryIsoCode]) {
     addedHolidays[countryIsoCode].forEach(event => event.remove());
@@ -59,54 +55,43 @@ function removeHolidays(countryIsoCode) {
   }
 }
 
-function markHolidayOnCalendar(holiday, type, countryIsoCode, subdivision) {
+function markHolidayOnCalendar(holiday, countryIsoCode) {
   let startDate = holiday.startDate;
   let endDate = holiday.endDate;
+  let eventColor = 'red'; // School holidays color
 
-  // Define the event color based on the holiday type
-  let eventColor = '';
-  switch (type) {
-    case 'public':
-      eventColor = 'orange';
-      break;
-    case 'school':
-      eventColor = 'red';
-      break;
-    default:
-      eventColor = 'green'; // Default color, if needed
-  }
-
-  // Get the country name based on the ISO code
   let countryName = getCountryName(countryIsoCode);
 
-  // Add the event to the calendar
+  let eventTitle = holiday.name[0].text;
+  if (holiday.subdivisions && holiday.subdivisions.length > 0) {
+    eventTitle += ` (${countryName}, ${holiday.subdivisions[0].shortName})`;
+  } else {
+    eventTitle += ` (${countryName})`;
+  }
+
   const event = calendar.addEvent({
-    title: `${holiday.name[0].text} (${countryName}${subdivision ? ', ' + subdivision : ''})`, // Including subdivision if available
+    title: eventTitle,
     start: startDate,
     end: endDate,
-    color: eventColor, // Use the determined color for the event
+    color: eventColor,
     allDay: true,
     extendedProps: {
-      countryIsoCode: countryIsoCode,
-      subdivision: subdivision // Include subdivision in extendedProps
+      countryIsoCode: countryIsoCode
     }
   });
 
-  // Store the added event
   if (!addedHolidays[countryIsoCode]) {
     addedHolidays[countryIsoCode] = [];
   }
   addedHolidays[countryIsoCode].push(event);
 }
 
-
-// Function to get the country name based on ISO code
 function getCountryName(countryIsoCode) {
   switch (countryIsoCode) {
     case 'DE':
       return 'Deutschland';
     case 'AT':
-      return 'Östereich';
+      return 'Österreich';
     case 'CH':
       return 'Schweiz';
     case 'FR':
@@ -115,7 +100,6 @@ function getCountryName(countryIsoCode) {
       return ''; // Return empty string if the ISO code is not recognized
   }
 }
-
 
   // Add the event to the calendar
   const event = calendar.addEvent({
