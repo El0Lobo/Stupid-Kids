@@ -59,7 +59,7 @@ function removeHolidays(countryIsoCode) {
   }
 }
 
-function markHolidayOnCalendar(holiday, type, countryIsoCode) {
+function markHolidayOnCalendar(holiday, type, countryIsoCode, subdivision) {
   let startDate = holiday.startDate;
   let endDate = holiday.endDate;
 
@@ -81,13 +81,14 @@ function markHolidayOnCalendar(holiday, type, countryIsoCode) {
 
   // Add the event to the calendar
   const event = calendar.addEvent({
-    title: `${holiday.name[0].text} (${countryName})`, // Adding country name to the event title
+    title: `${holiday.name[0].text} (${countryName}${subdivision ? ', ' + subdivision : ''})`, // Including subdivision if available
     start: startDate,
     end: endDate,
     color: eventColor, // Use the determined color for the event
     allDay: true,
     extendedProps: {
-      countryIsoCode: countryIsoCode
+      countryIsoCode: countryIsoCode,
+      subdivision: subdivision // Include subdivision in extendedProps
     }
   });
 
@@ -97,6 +98,7 @@ function markHolidayOnCalendar(holiday, type, countryIsoCode) {
   }
   addedHolidays[countryIsoCode].push(event);
 }
+
 
 // Function to get the country name based on ISO code
 function getCountryName(countryIsoCode) {
@@ -132,3 +134,6 @@ function getCountryName(countryIsoCode) {
     addedHolidays[countryIsoCode] = [];
   }
   addedHolidays[countryIsoCode].push(event);
+
+
+  holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'public', countryIsoCode, holiday.subdivision));
