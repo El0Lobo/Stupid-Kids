@@ -31,9 +31,9 @@ function setupCheckboxListeners() {
     });
   });
 }
-
 function fetchHolidays(countryIsoCode, validFrom, validTo) {
   const urlSchoolHolidays = `https://openholidaysapi.org/SchoolHolidays?countryIsoCode=${countryIsoCode}&validFrom=${validFrom}&validTo=${validTo}`;
+  const urlPublicHolidays = `https://openholidaysapi.org/PublicHolidays?countryIsoCode=${countryIsoCode}&validFrom=${validFrom}&validTo=${validTo}`;
 
   fetch(urlSchoolHolidays)
     .then(response => {
@@ -43,7 +43,20 @@ function fetchHolidays(countryIsoCode, validFrom, validTo) {
       return response.json();
     })
     .then(holidays => {
-      holidays.forEach(holiday => markHolidayOnCalendar(holiday, countryIsoCode));
+      holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'school', countryIsoCode));
+    })
+    .catch(error => console.error('Error fetching holidays:', error));
+
+
+  fetch(urlPublicHolidays)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch holidays');
+      }
+      return response.json();
+    })
+    .then(holidays => {
+      holidays.forEach(holiday => markHolidayOnCalendar(holiday, 'public', countryIsoCode));
     })
     .catch(error => console.error('Error fetching holidays:', error));
 }
@@ -55,10 +68,20 @@ function removeHolidays(countryIsoCode) {
   }
 }
 
-function markHolidayOnCalendar(holiday, countryIsoCode) {
+function markHolidayOnCalendar(holiday, type, countryIsoCode) {
   let startDate = holiday.startDate;
   let endDate = holiday.endDate;
-  let eventColor = 'red'; // School holidays color
+  let eventColor = '';
+  switch (type) {
+    case 'public':
+      eventColor = 'orange';
+      break;
+    case 'school':
+      eventColor = 'red';
+      break;
+    default:
+      eventColor = 'green'; // Standardfarbe, falls benötigt
+  }
 
   let countryName = getCountryName(countryIsoCode);
 
