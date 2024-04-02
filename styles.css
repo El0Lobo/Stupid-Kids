@@ -12,6 +12,7 @@
         }
         #choices{
             position: absolute;
+            top: 14%;
         }
         #bundesländerDiv {
             display: none;
