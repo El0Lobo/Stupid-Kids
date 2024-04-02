@@ -89,13 +89,13 @@ function markHolidayOnCalendar(holiday, countryIsoCode) {
 function getCountryName(countryIsoCode) {
   switch (countryIsoCode) {
     case 'DE':
-      return 'Deutschland';
+      return 'DE';
     case 'AT':
-      return 'Österreich';
+      return 'AT';
     case 'CH':
-      return 'Schweiz';
+      return 'CH';
     case 'FR':
-      return 'Frankreich';
+      return 'FR';
     default:
       return ''; // Return empty string if the ISO code is not recognized
   }
