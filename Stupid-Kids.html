@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Permanent Calendar Display</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.11/index.global.min.js'></script>
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+
+    </style>
+</head>
+<body>
+  <div id="choices">
+    <h2>Holidays</h2>
+    <form id="holidayForm">
+        <fieldset>
+            <legend>Select Countries:</legend>
+            <div class="countrySelection">
+                <input type="checkbox" id="DE" name="country" value="Germany">
+                <label for="DE">Deutschland</label>
+            </div>
+            <div class="countrySelection">
+                <input type="checkbox" id="AT" name="country" value="Austria">
+                <label for="AT">Österreich</label>
+            </div>
+            <div class="countrySelection">
+                <input type="checkbox" id="CH" name="country" value="Switzerland">
+                <label for="CH">Schweiz</label>
+            </div>
+            <div class="countrySelection">
+                <input type="checkbox" id="FR" name="country" value="France">
+                <label for="FR">Frankreich</label>
+            </div>
+            <a href="https://www.wartezeiten.app/europapark/" style="color: beige; text-decoration: none;">Europapark</a><br>
+            <a href="https://www.wartezeiten.app/rulantica/" style="color: beige; text-decoration: none;">Rulantica</a>            
+        </fieldset>
+    </form>
+    <div id="subdivisionsContainer">
+        <!-- Subdivisions will be dynamically inserted here -->
+    </div>
+</div>
+<div id='calendar'></div>
+<script src="./script.js"></script>
+</body>
+</html>

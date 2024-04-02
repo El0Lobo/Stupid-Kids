@@ -1,0 +1,26 @@
+        html{
+            background-color: darkslategray;
+            color: beige;
+        }
+        #body {
+            max-height: 90%;
+        }
+        #calendar {
+            max-width: 900px;
+            margin: 40px auto;
+            height: 600px;
+        }
+        #choices{
+            position: absolute;
+        }
+        #bundesländerDiv {
+            display: none;
+        }
+        .toggleSubdivisions{
+            cursor: pointer;
+        }
+        #subdivisionsContainer{
+          position: absolute;
+          left: -16%;
+          width: 250px;
+        }
